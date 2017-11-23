@@ -259,6 +259,7 @@ var badLogMessages = map[string][]string{
 	RunInitFailed:     {"signal: terminated", "signal: killed"},
 	sizeMismatch:      nil,
 	emptyBPFInitArg:   nil,
+	"DATA RACE":       nil,
 }
 
 var ciliumCLICommands = map[string]string{

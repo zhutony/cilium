@@ -21,7 +21,7 @@ endif
 
 INSTALL = install
 
-CGO_DISABLED = CGO_ENABLED=0
+CGO_DISABLED = CGO_ENABLED=1
 VERSION = $(shell cat $(dir $(lastword $(MAKEFILE_LIST)))/VERSION)
 VERSION_MAJOR = $(shell cat $(dir $(lastword $(MAKEFILE_LIST)))/VERSION | cut -d. -f1)
 # Use git only if in a Git repo
@@ -70,10 +70,10 @@ endif
 GOBUILD = $(GOFLAGS) -ldflags '$(GOLDFLAGS)' $(EXTRA_GOBUILD_FLAGS)
 
 # Uncomment to enable race detection
-#GOBUILD += -race
+GOBUILD += -race
 
 # Uncomment to enable deadlock detection
-#GOBUILD += -tags lockdebug
+GOBUILD += -tags lockdebug
 
 ifneq ($(LOCKDEBUG),)
     GOBUILD += -tags lockdebug
