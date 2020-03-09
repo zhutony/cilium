@@ -216,6 +216,7 @@ static __always_inline __u8 __ct_lookup(void *map, struct __ctx_buff *ctx,
 			ct_state->rev_nat_index = entry->rev_nat_index;
 			ct_state->loopback = entry->lb_loopback;
 			ct_state->node_port = entry->node_port;
+			ct_state->ifindex = entry->ifindex;
 			ct_state->dsr = entry->dsr;
 			ct_state->proxy_redirect = entry->proxy_redirect;
 			if (dir == CT_SERVICE) {
@@ -624,7 +625,7 @@ static __always_inline int ct_create6(const void *map_main, const void *map_rela
 
 	/* Note if this is a proxy connection so that replies can be redirected back to the proxy. */
 	entry.proxy_redirect = proxy_redirect;
-	
+
 	/* See the ct_create4 comments re the rx_bytes hack */
 	if (dir == CT_SERVICE) {
 		entry.rx_bytes = ct_state->backend_id;
@@ -633,6 +634,7 @@ static __always_inline int ct_create6(const void *map_main, const void *map_rela
 	entry.lb_loopback = ct_state->loopback;
 	entry.node_port = ct_state->node_port;
 	entry.dsr = ct_state->dsr;
+	entry.ifindex = ct_state->ifindex;
 
 	entry.rev_nat_index = ct_state->rev_nat_index;
 	seen_flags.value |= is_tcp ? TCP_FLAG_SYN : 0;
@@ -718,6 +720,7 @@ static __always_inline int ct_create4(const void *map_main, const void *map_rela
 	entry.lb_loopback = ct_state->loopback;
 	entry.node_port = ct_state->node_port;
 	entry.dsr = ct_state->dsr;
+	entry.ifindex = ct_state->ifindex;
 
 	/* Previously, the rx_bytes field was not used for entries with
 	 * the dir=CT_SERVICE (see GH#7060). Therefore, we can safely abuse
