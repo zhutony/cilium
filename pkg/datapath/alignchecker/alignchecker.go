@@ -1,4 +1,4 @@
-// Copyright 2019 Authors of Cilium
+// Copyright 2020 Authors of Cilium
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import (
 	"github.com/cilium/cilium/pkg/bpf"
 	"github.com/cilium/cilium/pkg/maps/ctmap"
 	"github.com/cilium/cilium/pkg/maps/eppolicymap"
+	"github.com/cilium/cilium/pkg/maps/fragmap"
 	ipcachemap "github.com/cilium/cilium/pkg/maps/ipcache"
 	"github.com/cilium/cilium/pkg/maps/lbmap"
 	"github.com/cilium/cilium/pkg/maps/lxcmap"
@@ -60,6 +61,8 @@ func CheckStructAlignments(path string) error {
 		"policy_key":           {reflect.TypeOf(policymap.PolicyKey{})},
 		"policy_entry":         {reflect.TypeOf(policymap.PolicyEntry{})},
 		"sock_key":             {reflect.TypeOf(sockmap.SockmapKey{})},
+		"ipv4_frag_id":         {reflect.TypeOf(fragmap.FragmentKey{})},
+		"ipv4_frag_l4ports":    {reflect.TypeOf(fragmap.FragmentValue{})},
 		// TODO: alignchecker does not support nested structs yet.
 		// "ipv4_nat_entry":    {reflect.TypeOf(nat.NatEntry4{})},
 		// "ipv6_nat_entry":    {reflect.TypeOf(nat.NatEntry6{})},

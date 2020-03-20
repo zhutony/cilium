@@ -163,6 +163,11 @@ func (ms *MapSweeper) RemoveDisabledMaps() {
 			"cilium_proxy4"}...)
 	}
 
+	if !option.Config.EnableIPv4 {
+		maps = append(maps, []string{
+			"cilium_ipv4_frag_datagrams"}...)
+	}
+
 	// Can be removed with Cilium 1.8
 	maps = append(maps, []string{
 		"cilium_policy_reserved_1",

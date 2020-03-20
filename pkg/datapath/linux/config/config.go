@@ -27,12 +27,14 @@ import (
 	"github.com/cilium/cilium/pkg/byteorder"
 	"github.com/cilium/cilium/pkg/datapath"
 	"github.com/cilium/cilium/pkg/datapath/iptables"
+	"github.com/cilium/cilium/pkg/datapath/linux/probes"
 	"github.com/cilium/cilium/pkg/defaults"
 	"github.com/cilium/cilium/pkg/identity"
 	"github.com/cilium/cilium/pkg/labels"
 	"github.com/cilium/cilium/pkg/maps/ctmap"
 	"github.com/cilium/cilium/pkg/maps/encrypt"
 	"github.com/cilium/cilium/pkg/maps/eppolicymap"
+	"github.com/cilium/cilium/pkg/maps/fragmap"
 	ipcachemap "github.com/cilium/cilium/pkg/maps/ipcache"
 	"github.com/cilium/cilium/pkg/maps/lbmap"
 	"github.com/cilium/cilium/pkg/maps/lxcmap"
@@ -102,6 +104,17 @@ func (h *HeaderfileWriter) WriteNodeConfig(w io.Writer, cfg *datapath.LocalNodeC
 		if option.Config.EnableNodePort {
 			ipv4NP := node.GetNodePortIPv4()
 			cDefinesMap["IPV4_NODEPORT"] = fmt.Sprintf("%#x", byteorder.HostSliceToNetwork(ipv4NP, reflect.Uint32).(uint32))
+		}
+
+		pm := probes.NewProbeManager()
+		supportedMapTypes := pm.GetMapTypes()
+		if supportedMapTypes.HaveLruHashMapType {
+			cDefinesMap["IPV4_FRAGMENTS"] = "1"
+			cDefinesMap["IPV4_FRAG_DATAGRAMS_MAP"] = fragmap.MapName
+			cDefinesMap["CILIUM_IPV4_FRAG_MAP_MAX_ENTRIES"] = fmt.Sprintf("%d", fragmap.MaxEntries)
+			// } else {
+			// TODO: Log something? But "log" not imported in this file yet
+			// log.Warningf("No support for IPv4 fragments (LRU maps not supported by kernel)")
 		}
 	}
 

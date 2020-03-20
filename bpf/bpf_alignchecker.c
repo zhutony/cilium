@@ -14,6 +14,7 @@
 #include "lib/conntrack.h"
 #include "lib/dbg.h"
 #include "lib/drop.h"
+#include "lib/ipv4.h"
 #define SKIP_UNDEF_LPM_LOOKUP_FN
 #include "lib/maps.h"
 #include "lib/nat.h"
@@ -63,6 +64,8 @@ int main() {
     DECLARE_STRUCT(policy_verdict_notify, iter);
     DECLARE_STRUCT(debug_msg, iter);
     DECLARE_STRUCT(debug_capture_msg, iter);
+    DECLARE_STRUCT(ipv4_frag_id, iter);
+    DECLARE_STRUCT(ipv4_frag_l4ports, iter);
 
     return 0;
 }
