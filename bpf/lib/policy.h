@@ -171,6 +171,7 @@ __policy_can_access(void *map, struct __ctx_buff *ctx, __u32 identity,
  * @arg src_identity	Source security identity for this packet
  * @arg dport		Destination port of this packet
  * @arg proto		L3 Protocol of this packet
+ * @arg is_fragment	True if packet is a TCP/UDP datagram fragment
  *
  * Returns:
  *   - Positive integer indicating the proxy_port to handle this traffic
