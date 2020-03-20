@@ -58,6 +58,7 @@ cilium-agent [flags]
       --enable-host-reachable-services                Enable reachability of services for host applications (beta)
       --enable-ipsec                                  Enable IPSec support
       --enable-ipv4                                   Enable IPv4 support (default true)
+      --enable-ipv4-fragments-tracking                Enable IPv4 fragments tracking for L4-based lookups (default true)
       --enable-ipv6                                   Enable IPv6 support (default true)
       --enable-k8s-endpoint-slice                     Enables k8s EndpointSlice feature in Cilium if the k8s cluster supports it (default true)
       --enable-k8s-event-handover                     Enable k8s event handover to kvstore for improved scalability

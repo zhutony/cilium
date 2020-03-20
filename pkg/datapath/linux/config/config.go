@@ -110,14 +110,16 @@ func (h *HeaderfileWriter) WriteNodeConfig(w io.Writer, cfg *datapath.LocalNodeC
 			cDefinesMap["IPV4_NODEPORT"] = fmt.Sprintf("%#x", byteorder.HostSliceToNetwork(ipv4NP, reflect.Uint32).(uint32))
 		}
 
-		pm := probes.NewProbeManager()
-		supportedMapTypes := pm.GetMapTypes()
-		if supportedMapTypes.HaveLruHashMapType {
-			cDefinesMap["IPV4_FRAGMENTS"] = "1"
-			cDefinesMap["IPV4_FRAG_DATAGRAMS_MAP"] = fragmap.MapName
-			cDefinesMap["CILIUM_IPV4_FRAG_MAP_MAX_ENTRIES"] = fmt.Sprintf("%d", fragmap.MaxEntries)
-		} else {
-			log.Warningf("No support for IPv4 fragments (LRU maps not supported by kernel)")
+		if option.Config.EnableIPv4FragmentsTracking {
+			pm := probes.NewProbeManager()
+			supportedMapTypes := pm.GetMapTypes()
+			if supportedMapTypes.HaveLruHashMapType {
+				cDefinesMap["IPV4_FRAGMENTS"] = "1"
+				cDefinesMap["IPV4_FRAG_DATAGRAMS_MAP"] = fragmap.MapName
+				cDefinesMap["CILIUM_IPV4_FRAG_MAP_MAX_ENTRIES"] = fmt.Sprintf("%d", fragmap.MaxEntries)
+			} else {
+				log.Warningf("No support for IPv4 fragments (LRU maps not supported by kernel)")
+			}
 		}
 	}
 

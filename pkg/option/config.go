@@ -811,6 +811,10 @@ const (
 
 	// EndpointStatusState enables CiliumEndpoint.Status.State
 	EndpointStatusState = "state"
+
+	// EnableIPv4FragmentsTrackingName is the name of the option to enable
+	// IPv4 fragments tracking for L4-based lookups. Needs LRU map support.
+	EnableIPv4FragmentsTrackingName = "enable-ipv4-fragments-tracking"
 )
 
 // Default string arguments
@@ -1608,6 +1612,10 @@ type DaemonConfig struct {
 	// EndpointStatus enables population of information in the
 	// CiliumEndpoint.Status resource
 	EndpointStatus map[string]struct{}
+
+	// EnableIPv4FragmentsTracking enables IPv4 fragments tracking for
+	// L4-based lookups. Needs LRU map support.
+	EnableIPv4FragmentsTracking bool
 }
 
 var (
@@ -2107,6 +2115,7 @@ func (c *DaemonConfig) Populate() {
 	c.CTMapEntriesTimeoutSYN = viper.GetDuration(CTMapEntriesTimeoutSYNName)
 	c.CTMapEntriesTimeoutFIN = viper.GetDuration(CTMapEntriesTimeoutFINName)
 	c.PolicyAuditMode = viper.GetBool(PolicyAuditModeArg)
+	c.EnableIPv4FragmentsTracking = viper.GetBool(EnableIPv4FragmentsTrackingName)
 
 	if nativeCIDR := viper.GetString(IPv4NativeRoutingCIDR); nativeCIDR != "" {
 		c.ipv4NativeRoutingCIDR = cidr.MustParseCIDR(nativeCIDR)

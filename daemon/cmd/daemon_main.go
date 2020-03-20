@@ -754,6 +754,9 @@ func init() {
 	flags.Duration(option.K8sHeartbeatTimeout, 30*time.Second, "Configures the timeout for api-server heartbeat, set to 0 to disable")
 	option.BindEnv(option.K8sHeartbeatTimeout)
 
+	flags.Bool(option.EnableIPv4FragmentsTrackingName, defaults.EnableIPv4FragmentsTracking, "Enable IPv4 fragments tracking for L4-based lookups")
+	option.BindEnv(option.EnableIPv4FragmentsTrackingName)
+
 	viper.BindPFlags(flags)
 }
 
