@@ -31,6 +31,8 @@ import (
 	"github.com/cilium/cilium/pkg/defaults"
 	"github.com/cilium/cilium/pkg/identity"
 	"github.com/cilium/cilium/pkg/labels"
+	"github.com/cilium/cilium/pkg/logging"
+	"github.com/cilium/cilium/pkg/logging/logfields"
 	"github.com/cilium/cilium/pkg/maps/ctmap"
 	"github.com/cilium/cilium/pkg/maps/encrypt"
 	"github.com/cilium/cilium/pkg/maps/eppolicymap"
@@ -49,6 +51,8 @@ import (
 
 	"github.com/vishvananda/netlink"
 )
+
+var log = logging.DefaultLogger.WithField(logfields.LogSubsys, "datapath-config")
 
 // HeaderfileWriter is a wrapper type which implements datapath.ConfigWriter.
 // It manages writing of configuration of datapath program headerfiles.
@@ -112,9 +116,8 @@ func (h *HeaderfileWriter) WriteNodeConfig(w io.Writer, cfg *datapath.LocalNodeC
 			cDefinesMap["IPV4_FRAGMENTS"] = "1"
 			cDefinesMap["IPV4_FRAG_DATAGRAMS_MAP"] = fragmap.MapName
 			cDefinesMap["CILIUM_IPV4_FRAG_MAP_MAX_ENTRIES"] = fmt.Sprintf("%d", fragmap.MaxEntries)
-			// } else {
-			// TODO: Log something? But "log" not imported in this file yet
-			// log.Warningf("No support for IPv4 fragments (LRU maps not supported by kernel)")
+		} else {
+			log.Warningf("No support for IPv4 fragments (LRU maps not supported by kernel)")
 		}
 	}
 
