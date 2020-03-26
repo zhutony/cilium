@@ -43,7 +43,7 @@ const (
 
 	// CustomResourceDefinitionSchemaVersion is semver-conformant version of CRD schema
 	// Used to determine if CRD needs to be updated in cluster
-	CustomResourceDefinitionSchemaVersion = "1.16"
+	CustomResourceDefinitionSchemaVersion = "1.17"
 
 	// CustomResourceDefinitionSchemaVersionKey is key to label which holds the CRD schema version
 	CustomResourceDefinitionSchemaVersionKey = "io.cilium.k8s.crd.schema.version"
@@ -644,6 +644,7 @@ var (
 
 	cnpCRV = apiextensionsv1beta1.CustomResourceValidation{
 		OpenAPIV3Schema: &apiextensionsv1beta1.JSONSchemaProps{
+			Type:       "object",
 			Properties: properties,
 		},
 	}
@@ -677,13 +678,11 @@ var (
 		OneOf: []apiextensionsv1beta1.JSONSchemaProps{
 			{
 				// IPv4 CIDR
-				Type: "string",
 				Pattern: `^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4]` +
 					`[0-9]|[01]?[0-9][0-9]?)\/([0-9]|[1-2][0-9]|3[0-2])$`,
 			},
 			{
 				// IPv6 CIDR
-				Type: "string",
 				Pattern: `^s*((([0-9A-Fa-f]{1,4}:){7}(:|([0-9A-Fa-f]{1,4})))` +
 					`|(([0-9A-Fa-f]{1,4}:){6}:([0-9A-Fa-f]{1,4})?)` +
 					`|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){0,1}):([0-9A-Fa-f]{1,4})?))` +
@@ -698,6 +697,7 @@ var (
 	}
 
 	CIDRRule = apiextensionsv1beta1.JSONSchemaProps{
+		Type: "object",
 		Description: "CIDRRule is a rule that specifies a CIDR prefix to/from which outside " +
 			"communication is allowed, along with an optional list of subnets within that CIDR " +
 			"prefix to/from which outside communication is not allowed.",
@@ -721,6 +721,7 @@ var (
 	}
 
 	EgressRule = apiextensionsv1beta1.JSONSchemaProps{
+		Type: "object",
 		Description: "EgressRule contains all rule types which can be applied at egress, i.e. " +
 			"network traffic that originates inside the endpoint and exits the endpoint " +
 			"selected by the endpointSelector.\n\n- All members of this structure are optional. " +
@@ -815,11 +816,12 @@ var (
 				},
 			},
 			"toGroups": {
+				Type: "object",
 				Description: `ToGroups is a list of constraints that will
 				gather data from third-party providers and create a new
 				derived policy.`,
 				Properties: map[string]apiextensionsv1beta1.JSONSchemaProps{
-					"AWS": AWSGroup,
+					"aws": AWSGroup,
 				},
 			},
 			"toFQDNs": {
@@ -834,6 +836,7 @@ var (
 	}
 
 	FQDNRule = apiextensionsv1beta1.JSONSchemaProps{
+		Type:        "object",
 		Description: `FQDNRule is a rule that specifies an fully qualified domain name to which outside communication is allowed`,
 		Properties: map[string]apiextensionsv1beta1.JSONSchemaProps{
 			"matchName":    MatchFQDNName,
@@ -854,19 +857,29 @@ var (
 	}
 
 	AWSGroup = apiextensionsv1beta1.JSONSchemaProps{
-		Description: "",
+		Type: "object",
 		Properties: map[string]apiextensionsv1beta1.JSONSchemaProps{
-			"SecurityGroupsIds": {
+			"securityGroupsIds": {
 				Description: `SecurityGroupsIds is the list of AWS security
 				group IDs that will filter the instances IPs from the AWS API`,
 				Type: "array",
+				Items: &apiextensionsv1beta1.JSONSchemaPropsOrArray{
+					Schema: &apiextensionsv1beta1.JSONSchemaProps{
+						Type: "string",
+					},
+				},
 			},
-			"SecurityGroupsNames": {
+			"securityGroupsNames": {
 				Description: `SecurityGroupsNames is the list of  AWS security
 				group names that will filter the instances IPs from the AWS API`,
 				Type: "array",
+				Items: &apiextensionsv1beta1.JSONSchemaPropsOrArray{
+					Schema: &apiextensionsv1beta1.JSONSchemaProps{
+						Type: "string",
+					},
+				},
 			},
-			"Region": {
+			"region": {
 				Description: `Region is the key that will filter the AWS EC2
 				instances in the given region`,
 				Type: "string",
@@ -876,6 +889,7 @@ var (
 	EndpointSelector = *LabelSelector.DeepCopy()
 
 	IngressRule = apiextensionsv1beta1.JSONSchemaProps{
+		Type: "object",
 		Description: "IngressRule contains all rule types which can be applied at ingress, " +
 			"i.e. network traffic that originates outside of the endpoint and is entering " +
 			"the endpoint selected by the endpointSelector.\n\n- All members of this structure " +
@@ -967,6 +981,7 @@ var (
 	}
 
 	K8sServiceNamespace = apiextensionsv1beta1.JSONSchemaProps{
+		Type: "object",
 		Description: "K8sServiceNamespace is an abstraction for the k8s service + namespace " +
 			"types.",
 		Properties: map[string]apiextensionsv1beta1.JSONSchemaProps{
@@ -980,6 +995,7 @@ var (
 	}
 
 	L7Rules = apiextensionsv1beta1.JSONSchemaProps{
+		Type: "object",
 		Description: "L7Rules is a union of port level rule types. Mixing of different port " +
 			"level rule types is disallowed, so exactly one of the following must be set. If " +
 			"none are specified, then no additional port level rules are applied.",
@@ -1020,6 +1036,7 @@ var (
 	}
 
 	PortRuleDNS = apiextensionsv1beta1.JSONSchemaProps{
+		Type:        "object",
 		Description: `FQDNRule is a rule that specifies an fully qualified domain name to which outside communication is allowed`,
 		Properties: map[string]apiextensionsv1beta1.JSONSchemaProps{
 			"matchName":    MatchFQDNName,
@@ -1028,6 +1045,7 @@ var (
 	}
 
 	Label = apiextensionsv1beta1.JSONSchemaProps{
+		Type:        "object",
 		Description: "Label is the cilium's representation of a container label.",
 		Required: []string{
 			"key",
@@ -1048,6 +1066,7 @@ var (
 	}
 
 	LabelSelector = apiextensionsv1beta1.JSONSchemaProps{
+		Type: "object",
 		Description: "A label selector is a label query over a set of resources. The result " +
 			"of matchLabels and matchExpressions are ANDed. An empty label selector matches " +
 			"all objects. A null label selector matches no objects.",
@@ -1071,6 +1090,7 @@ var (
 	}
 
 	LabelSelectorRequirement = apiextensionsv1beta1.JSONSchemaProps{
+		Type: "object",
 		Description: "A label selector requirement is a selector that contains values, a key, " +
 			"and an operator that relates the key and values.",
 		Properties: map[string]apiextensionsv1beta1.JSONSchemaProps{
@@ -1114,6 +1134,7 @@ var (
 	}
 
 	PortProtocol = apiextensionsv1beta1.JSONSchemaProps{
+		Type:        "object",
 		Description: "PortProtocol specifies an L4 port with an optional transport protocol",
 		Required: []string{
 			"port",
@@ -1193,6 +1214,7 @@ var (
 	}
 
 	PortRule = apiextensionsv1beta1.JSONSchemaProps{
+		Type: "object",
 		Description: "PortRule is a list of ports/protocol combinations with optional Layer 7 " +
 			"rules which must be met.",
 		Properties: map[string]apiextensionsv1beta1.JSONSchemaProps{
@@ -1276,6 +1298,7 @@ var (
 	}
 
 	PortRuleHTTP = apiextensionsv1beta1.JSONSchemaProps{
+		Type: "object",
 		Description: "PortRuleHTTP is a list of HTTP protocol constraints. All fields are " +
 			"optional, if all fields are empty or missing, the rule does not have any effect." +
 			"\n\nAll fields of this type are extended POSIX regex as defined by " +
@@ -1334,6 +1357,7 @@ var (
 	}
 
 	PortRuleKafka = apiextensionsv1beta1.JSONSchemaProps{
+		Type: "object",
 		Description: "PortRuleKafka is a list of Kafka protocol constraints. All fields are " +
 			"optional, if all fields are empty or missing, the rule will match all Kafka " +
 			"messages.",
@@ -1401,6 +1425,7 @@ var (
 	}
 
 	PortRuleL7 = apiextensionsv1beta1.JSONSchemaProps{
+		Type: "object",
 		Description: "PortRuleL7 is a map of {key,value} pairs which is passed to the " +
 			"parser referenced in l7proto. It is up to the parser to define what to " +
 			"do with the map data. If omitted or empty, all requests are allowed. " +
@@ -1421,6 +1446,7 @@ var (
 	}
 
 	Rule = apiextensionsv1beta1.JSONSchemaProps{
+		Type: "object",
 		Description: "Rule is a policy rule which must be applied to all endpoints which match " +
 			"the labels contained in the endpointSelector\n\nEach rule is split into an " +
 			"ingress section which contains all rules applicable at ingress, and an egress " +
@@ -1470,6 +1496,7 @@ var (
 	}
 
 	Service = apiextensionsv1beta1.JSONSchemaProps{
+		Type:        "object",
 		Description: "Service wraps around selectors for services",
 		Properties: map[string]apiextensionsv1beta1.JSONSchemaProps{
 			"k8sService":         K8sServiceNamespace,
@@ -1478,6 +1505,7 @@ var (
 	}
 
 	ServiceSelector = apiextensionsv1beta1.JSONSchemaProps{
+		Type:        "object",
 		Description: "ServiceSelector is a label selector for k8s services",
 		Required: []string{
 			"selector",
