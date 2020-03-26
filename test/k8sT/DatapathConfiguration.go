@@ -15,6 +15,7 @@
 package k8sTest
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"regexp"
@@ -399,6 +400,7 @@ var _ = Describe("K8sDatapathConfig", func() {
 			SkipIfIntegration(helpers.CIIntegrationFlannel)
 			SkipIfIntegration(helpers.CIIntegrationGKE)
 			SkipItIfNoKubeProxy()
+			SkipIfKernel(context.TODO(), kubectl, "4.19.57")
 
 			privateIface, err := kubectl.GetPrivateIface()
 			Expect(err).Should(BeNil(), "Unable to determine private iface")
