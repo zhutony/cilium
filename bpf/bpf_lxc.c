@@ -566,10 +566,7 @@ ct_recreate4:
 		 * perform the reverse DNAT.
 		 */
 		if (ct_state.node_port) {
-			ctx->cb[CB_IFINDEX] = ct_state.ifindex;
-			ctx->tc_index |= TC_INDEX_F_SKIP_RECIRCULATION;
-			ep_tail_call(ctx, CILIUM_CALL_IPV4_NODEPORT_REVNAT);
-			return DROP_MISSED_TAIL_CALL;
+			return ctx_redirect(ctx, ct_state.ifindex, 0);
 		}
 # ifdef ENABLE_DSR
 		if (ct_state.dsr) {

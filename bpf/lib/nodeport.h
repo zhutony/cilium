@@ -1137,7 +1137,7 @@ redo:
  * of the bpf_netdev, bpf_overlay and of the bpf_lxc.
  */
 static __always_inline int rev_nodeport_lb4(struct __ctx_buff *ctx, int *ifindex,
-					    union macaddr *mac)
+					    union macaddr *mac, bool *found)
 {
 	struct ipv4_ct_tuple tuple = {};
 	void *data, *data_end;
@@ -1171,6 +1171,8 @@ static __always_inline int rev_nodeport_lb4(struct __ctx_buff *ctx, int *ifindex
 
 		if (!revalidate_data(ctx, &data, &data_end, &ip4))
 			return DROP_INVALID;
+
+		*found = true;
 
 		bpf_mark_snat_done(ctx);
 #ifdef ENCAP_IFINDEX
@@ -1237,8 +1239,9 @@ int tail_rev_nodeport_lb4(struct __ctx_buff *ctx)
 	int ifindex = ctx->cb[CB_IFINDEX];
 	union macaddr mac = NATIVE_DEV_MAC;
 	int ret = 0;
+	bool found = false;
 
-	ret = rev_nodeport_lb4(ctx, &ifindex, &mac);
+	ret = rev_nodeport_lb4(ctx, &ifindex, &mac, &found);
 	if (IS_ERR(ret))
 		return send_drop_notify_error(ctx, 0, ret, CTX_ACT_DROP, METRIC_EGRESS);
 	return ctx_redirect(ctx, ifindex, 0);
