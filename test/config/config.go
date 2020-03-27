@@ -39,6 +39,7 @@ type CiliumTestConfigType struct {
 	Kubeconfig          string
 	Registry            string
 	Benchmarks          bool
+	UpdateTestImageTag  string
 }
 
 // CiliumTestConfig holds the global configuration of commandline flags
@@ -74,4 +75,5 @@ func (c *CiliumTestConfigType) ParseFlags() {
 	flag.StringVar(&c.Registry, "cilium.registry", "", "docker registry hostname for Cilium image")
 	flag.BoolVar(&c.Benchmarks, "cilium.benchmarks", false,
 		"Specifies benchmark tests should be run which may increase test time")
+	flag.StringVar(&c.UpdateTestImageTag, "cilium.update-tag", "latest", "docker tag to be used in update test")
 }

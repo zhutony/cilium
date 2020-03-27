@@ -58,6 +58,7 @@ func init() {
 		getOrSetEnvVar(k, v)
 	}
 	config.CiliumTestConfig.ParseFlags()
+	helpers.CiliumLatestImageVersion = config.CiliumTestConfig.UpdateTestImageTag
 
 	os.RemoveAll(helpers.TestResultsPath)
 

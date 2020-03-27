@@ -2,7 +2,7 @@
 
 pipeline {
     agent {
-        label 'baremetal'
+        label 'gke'
     }
 
     environment {
@@ -12,6 +12,7 @@ pipeline {
         GOPATH="${WORKSPACE}"
         GKE_KEY=credentials('gke-key')
         GKE_ZONE="us-west1-a"
+        TAG="${GIT_COMMIT}"
     }
 
     options {
@@ -81,7 +82,7 @@ pipeline {
                         TESTDIR="${WORKSPACE}/${PROJ_PATH}/test"
                     }
                     steps {
-                        sh 'cd ${TESTDIR}; ./make-images-push-to-local-registry.sh $(./print-node-ip.sh) latest'
+                        sh 'cd ${TESTDIR}; ./make-images-push-to-local-registry.sh $(./print-node-ip.sh) ${TAG}'
                     }
                     post {
                         unsuccessful {
@@ -129,7 +130,7 @@ pipeline {
             }
             steps {
                 dir("${TESTDIR}"){
-                    sh 'K8S_VERSION=$(${TESTDIR}/gke/get-cluster-version.sh) CILIUM_IMAGE=$(./print-node-ip.sh)/cilium/cilium:latest CILIUM_OPERATOR_IMAGE=$(./print-node-ip.sh)/cilium/operator:latest ginkgo --focus="$(echo ${ghprbCommentBody} | sed -r "s/([^ ]* |^[^ ]*$)//" | sed "s/^$/K8s*/")" -v --failFast=${FAILFAST} -- -cilium.provision=false -cilium.timeout=${GINKGO_TIMEOUT} -cilium.kubeconfig=${TESTDIR}/gke/gke-kubeconfig -cilium.passCLIEnvironment=true -cilium.registry=$(./print-node-ip.sh)'
+                    sh 'K8S_VERSION=$(${TESTDIR}/gke/get-cluster-version.sh) CILIUM_IMAGE=$(./print-node-ip.sh)/cilium/cilium:${TAG} CILIUM_OPERATOR_IMAGE=$(./print-node-ip.sh)/cilium/operator:${TAG} ginkgo --focus="$(echo ${ghprbCommentBody} | sed -r "s/([^ ]* |^[^ ]*$)//" | sed "s/^$/K8s*/")" -v --failFast=${FAILFAST} -- -cilium.provision=false -cilium.timeout=${GINKGO_TIMEOUT} -cilium.kubeconfig=${TESTDIR}/gke/gke-kubeconfig -cilium.passCLIEnvironment=true -cilium.registry=$(./print-node-ip.sh) -cilium.update-tag=${TAG}'
                 }
             }
             post {
@@ -151,6 +152,7 @@ pipeline {
     post {
         always {
             sh 'cd ${TESTDIR}/gke; ./release-cluster.sh || true'
+            sh 'cd ${TESTDIR}; ./clean-local-registry-tag.sh $(./print-node-ip.sh) ${TAG}'
             cleanWs()
             sh '/usr/local/bin/cleanup || true'
         }

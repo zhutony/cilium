@@ -44,6 +44,9 @@ var (
 	// happens during the test are saved. This buffer will be printed in the
 	// test output inside <checks> labels.
 	CheckLogs = ginkgoext.NewWriter(new(bytes.Buffer))
+
+	// CiliumLatestImageVersion can be set via command line option
+	CiliumLatestImageVersion = "latest"
 )
 
 const (
@@ -185,7 +188,6 @@ const (
 	CiliumStableHelmChartVersion = "1.7-dev"
 	CiliumStableVersion          = "v1.7"
 	CiliumLatestHelmChartVersion = "1.7.90"
-	CiliumLatestImageVersion     = "latest"
 
 	MonitorLogFileName = "monitor.log"
 
