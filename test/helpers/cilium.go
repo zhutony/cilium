@@ -650,7 +650,7 @@ func (s *SSHMeta) ValidateNoErrorsInLogs(duration time.Duration) {
 		}
 	}()
 
-	failIfContainsBadLogMsg(logs)
+	failIfContainsBadLogMsg(logs, map[string]bool{})
 
 	fmt.Fprintf(CheckLogs, logutils.LogErrorsSummary(logs))
 }

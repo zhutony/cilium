@@ -430,9 +430,12 @@ func CanRunK8sVersion(ciliumVersion, k8sVersionStr string) (bool, error) {
 // failIfContainsBadLogMsg makes a test case to fail if any message from
 // given log messages contains an entry from badLogMessages (map key) AND
 // does not contain ignore messages (map value).
-func failIfContainsBadLogMsg(logs string) {
+func failIfContainsBadLogMsg(logs string, whitelist map[string]bool) {
 	for _, msg := range strings.Split(logs, "\n") {
 		for fail, ignoreMessages := range badLogMessages {
+			if _, whitelisted := whitelist[fail]; whitelisted {
+				continue
+			}
 			if strings.Contains(msg, fail) {
 				ok := false
 				for _, ignore := range ignoreMessages {

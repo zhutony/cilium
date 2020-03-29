@@ -2337,6 +2337,12 @@ func (kub *Kubectl) CiliumCheckReport(ctx context.Context) {
 // `deadlocks` or `segmentation faults` messages. In case of any of these
 // messages, it'll mark the test as failed.
 func (kub *Kubectl) ValidateNoErrorsInLogs(duration time.Duration) {
+	kub.ValidateNoErrorsInLogsWhitelist(duration, map[string]bool{})
+}
+
+// ValidateNoErrorsInLogsWhitelist is similar to ValidateNoErrorsInLogs, but
+// accepts a whitelist of log messages.
+func (kub *Kubectl) ValidateNoErrorsInLogsWhitelist(duration time.Duration, whitelist map[string]bool) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
@@ -2368,7 +2374,7 @@ func (kub *Kubectl) ValidateNoErrorsInLogs(duration time.Duration) {
 		}
 	}()
 
-	failIfContainsBadLogMsg(logs)
+	failIfContainsBadLogMsg(logs, whitelist)
 
 	fmt.Fprintf(CheckLogs, logutils.LogErrorsSummary(logs))
 }

@@ -96,7 +96,8 @@ var _ = Describe("K8sUpdates", func() {
 	})
 
 	JustAfterEach(func() {
-		kubectl.ValidateNoErrorsInLogs(CurrentGinkgoTestDescription().Duration)
+		whitelist := map[string]bool{helpers.RemovingMapMsg: true}
+		kubectl.ValidateNoErrorsInLogsWhitelist(CurrentGinkgoTestDescription().Duration, whitelist)
 	})
 
 	AfterEach(func() {
